@@ -8,10 +8,8 @@ public class Main {
         Signal.handle(new Signal("INT"), new SignalHandler() {
             public void handle(Signal sig) {
                 System.out.println("Программа завершает работу");
-                //if (Console.Console.HandlerB("Введите Bool: ", Command.boolCheck)) {
                 System.out.format("\nПрограмм работала %f сек.\n", (System.nanoTime() - start) / 1e9f);//ctrl-c
                 System.exit(0);
-                //}
             }
         });
 
