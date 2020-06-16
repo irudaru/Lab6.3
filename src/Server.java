@@ -14,7 +14,7 @@ import java.net.Socket;
 
 /*
 ДАЛЕЕ БЕСПОЛЕЗНАЯ ИНФОРМАЦИЯ
-    *   используя ServerSocket и Socket мы уже пользуемся протоколом TCP
+    *   используя ServerSocket и Socket мы уже пользуемся протоколом TCP///
  */
 
 public class Server {
