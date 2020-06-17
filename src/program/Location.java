@@ -2,11 +2,13 @@ package program;
 
 import exceptions.FailedCheckException;
 
+import java.io.Serializable;
+
 /**
  * Класс - поле класса program.Route
  */
 
-public class Location {
+public class Location implements Serializable {
     private Long x; //Поле не может быть null
     private Long y; //Поле не может быть null
     private long z; //????

@@ -10,9 +10,7 @@ package program;/*
 - Обработать ответ от сервера(и вывести резульатат в консоль)
 - Завершить работу клиента при команде exit
  */
-
-//  ДАЛЕЕ Я ПРОСТО СКОПИРОВАЛ КОД С JAVARUSH
-
+import command.Command;
 import exceptions.EndOfFileException;
 
 import java.io.*;
@@ -34,28 +32,30 @@ public class Client {
 
                 try {
                     String[] com;
-                    Writer.write("\u001B[33m" + "Ожидание ввода команды: " + "\u001B[0m");
-                    com = AbstractReader.splitter(Console.console.read());
-                    CommanderClient.switcher(Console.console, com[0], com[1]);
+                    while (true) {
+                        Writer.write("\u001B[33m" + "Ожидание ввода команды: " + "\u001B[0m");
+                        com = AbstractReader.splitter(Console.console.read());
+                        Command command = CommanderClient.switcher(Console.console, com[0], com[1]);
+                        if (command == null)
+                            continue;
 
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-                    objectOutputStream.writeObject(com);
-                    objectOutputStream.flush();
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+                        objectOutputStream.writeObject(command);
+                        objectOutputStream.flush();
 
-                    Writer.writeln(byteArrayOutputStream.toByteArray());
-                    Writer.writeln(objectOutputStream);
-                    dOut.writeInt(byteArrayOutputStream.size());
-                    dOut.write(byteArrayOutputStream.toByteArray());
+                        dOut.writeInt(byteArrayOutputStream.size());
+                        dOut.write(byteArrayOutputStream.toByteArray());
 
-                    int length = dIn.readInt();
-                    if(length>0) {
-                        byte[] message = new byte[length];
-                        dIn.readFully(message, 0, message.length); // read the message
-                        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(message));
-                        Writer w = (Writer) objectInputStream.readObject();
-                        w.writeAll();
-                        objectInputStream.close();
+                        int length = dIn.readInt();
+                        if (length > 0) {
+                            byte[] message = new byte[length];
+                            dIn.readFully(message, 0, message.length); // read the message
+                            ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(message));
+                            Writer w = (Writer) objectInputStream.readObject();
+                            w.writeAll();
+                            objectInputStream.close();
+                        }
                     }
 
                 } catch (EndOfFileException e) {

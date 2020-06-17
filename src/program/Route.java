@@ -2,13 +2,14 @@ package program;
 
 import exceptions.FailedCheckException;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 /**
  * Класс, который хранится в коллекции
  */
 
-public class Route implements Comparable<Route> {
+public class Route implements Comparable<Route>, Serializable {
     private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null

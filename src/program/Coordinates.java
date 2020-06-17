@@ -2,11 +2,13 @@ package program;
 
 import exceptions.FailedCheckException;
 
+import java.io.Serializable;
+
 /**
  * Класс - поле класса program.Route
  */
 
-public class Coordinates {
+public class Coordinates implements Serializable {
     private int x; //Поле может быть null
     private Long y; //Значение поля должно быть больше -765, Поле не может быть null
 

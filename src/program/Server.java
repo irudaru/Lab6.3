@@ -42,28 +42,28 @@ public class Server {
                     dIn = new DataInputStream(clientSocket.getInputStream());
 
                     Collection collection = Collection.startFromSave(args);
+                    while (true) {
+                        int length = dIn.readInt();
+                        if (length > 0) {
+                            byte[] message = new byte[length];
+                            dIn.readFully(message, 0, message.length); // read the message
 
-                    int length = dIn.readInt();
-                    if(length>0) {
-                        byte[] message = new byte[length];
-                        dIn.readFully(message, 0, message.length); // read the message
+                            ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(message));
 
-                        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(message));
-                        Writer.writeln(message);
-                        Writer.writeln(objectInputStream.readObject());
-                        Command com = (Command) objectInputStream.readObject();
-                        objectInputStream.close();
+                            Command command = (Command) objectInputStream.readObject();
+                            objectInputStream.close();
 
-                        Writer w = CommanderServer.switcher(com, collection);
+                            Writer w = CommanderServer.switcher(command, collection);
 
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-                        objectOutputStream.writeObject(w);
-                        objectOutputStream.flush();
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+                            objectOutputStream.writeObject(w);
+                            objectOutputStream.flush();
 
-                        dOut.writeInt(byteArrayOutputStream.size());
-                        dOut.write(byteArrayOutputStream.toByteArray());
+                            dOut.writeInt(byteArrayOutputStream.size());
+                            dOut.write(byteArrayOutputStream.toByteArray());
 
+                        }
                     }
 
                 } finally { // в любом случае сокет будет закрыт
