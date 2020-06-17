@@ -7,7 +7,7 @@ import exceptions.FailedCheckException;
 import java.io.FileNotFoundException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Comparator;
 
 /**
  * Класс - обработчик команд с консоли
@@ -108,55 +108,30 @@ public class Commander {
      * Выводит значения поля distance в порядке возрастания
      */
     public static void printFieldAscendingDistance(Collection c) {
-        if (c.list.size() > 0) {
-            LinkedList<Long> distances = new LinkedList<>();
-            for (Route r : c.list) {
-                if (r.getDistance() != null)
-                    distances.add(r.getDistance());
-            }
-            Collections.sort(distances);
-            for (Long dis : distances) {
-                Writer.writeln(dis);
-            }
-            return;
-        }
-        Writer.writeln("В коллекции нет элементов");
+        if (c.list.size() > 0)
+            c.list.stream().filter(r -> r.getDistance() != null).map(Route::getDistance).sorted().forEach(Writer::writeln);
+        else
+            Writer.writeln("В коллекции нет элементов");
     }
 
     /**
      * выводит объект из коллекции, значение поля creationDate которого является минимальным
      */
     public static void minByCreationDate(Collection c) {
-        if (c.list.size() > 0) {
-            Route minR = c.list.get(0);
-            for (Route r : c.list) {
-                if (r.getCreationDate().compareTo(minR.getCreationDate()) < 0)
-                    minR = r;
-            }
-            Writer.writeln(minR.toString());
-            return;
-        }
-        Writer.writeln("В коллекции нет элементов");
+        if (c.list.size() > 0)
+            Writer.writeln(c.list.stream().min(Comparator.comparing(Route::getCreationDate)).get());
+        else
+            Writer.writeln("В коллекции нет элементов");
     }
 
     /**
      * Выводит среднее значение поля distance
      */
     public static void averageOfDistance(Collection c) {
-        if (c.list.size() > 0) {
-            long sum = 0L;
-            int count = 0;
-            for (Route r : c.list) {
-                if (r.getDistance() != null)
-                    sum += r.getDistance();
-                else
-                    count++;
-            }
-            if (c.list.size() - count > 0)
-                Writer.writeln("Среднее значение distance: " + sum / (c.list.size() - count));
-            return;
-        }
-        Writer.writeln("В коллекции нет элементов");
+        if (c.list.size() > 0)
+            Writer.writeln("Среднее значение distance: " + c.list.stream().filter(r -> r.getDistance() != null).mapToDouble(Route::getDistance).average().orElse(Double.NaN));
+        else
+            Writer.writeln("В коллекции нет элементов");
     }
 
     /**
@@ -165,16 +140,8 @@ public class Commander {
     public static void removeLower(AbstractReader reader, Collection c, String s) throws EndOfFileException {
         int id = c.getRandId();
         Route newRoute = toAdd(reader, id, s);
-        int size = c.list.size();
-        int i = 0;
-        while (i < size) {
-            if (c.list.get(i).compareTo(newRoute) < 0) {
-                c.list.remove(c.list.get(i));
-                size -= 1;
-                i -= 1;
-            }
-            i++;
-        }
+        c.list.stream().filter(route -> route.compareTo(newRoute) < 0).forEach(route -> Writer.writeln( "Удален элемент с id: " + route.getId()));
+        c.list.removeIf(route -> route.compareTo(newRoute) < 0);
         Collections.sort(c.list);
     }
 
@@ -184,16 +151,8 @@ public class Commander {
     public static void removeGreater(AbstractReader reader, Collection c, String s) throws EndOfFileException {
         int id = c.getRandId();
         Route newRoute = toAdd(reader, id, s);
-        int size = c.list.size();
-        int i = 0;
-        while (i < size) {
-            if (c.list.get(i).compareTo(newRoute) > 0) {
-                c.list.remove(c.list.get(i));
-                size -= 1;
-                i -= 1;
-            }
-            i++;
-        }
+        c.list.stream().filter(route -> route.compareTo(newRoute) > 0).forEach(route -> Writer.writeln( "Удален элемент с id: " + route.getId()));
+        c.list.removeIf(route -> route.compareTo(newRoute) > 0);
         Collections.sort(c.list);
     }
 
@@ -258,7 +217,7 @@ public class Commander {
     }
 
     /**
-     * Удаляет все элементы по его id
+     * Удаляет элемент по его id
      */
     public static void removeById(AbstractReader reader, Collection c, String s) throws EndOfFileException {
         int id;
@@ -302,13 +261,11 @@ public class Commander {
      * Выводит все элементы списка
      */
     public static void show(Collection c) {
-        if (c.list.isEmpty()) {
+        if (c.list.isEmpty())
             Writer.writeln("В коллекции нет элементов");
-            return;
-        }
-        for (Route r : c.list) {
-            Writer.writeln(r.toString());
-        }
+        else
+            c.list.forEach(Writer::writeln);
+
     }
 
     /**

@@ -2,6 +2,7 @@ package program;
 
 import command.Command;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
@@ -92,20 +93,10 @@ public class CommanderServer {
      */
     public static Writer printFieldAscendingDistance(Collection c) {
         Writer w = new Writer();
-        if (c.list.size() > 0) {
-            LinkedList<Long> distances = new LinkedList<>();
-            //c.list.stream().filter(r -> r.getDistance() != null).forEach(r -> distances.add(r.getDistance()));
-            for (Route r : c.list) {
-                if (r.getDistance() != null)
-                    distances.add(r.getDistance());
-            }
-            Collections.sort(distances);
-            for (Long dis : distances) {
-                w.addToList(true, dis);
-            }
-            return w;
-        }
-        w.addToList(true,"В коллекции нет элементов");
+        if (c.list.size() > 0)
+            c.list.stream().filter(r -> r.getDistance() != null).map(Route::getDistance).sorted().forEach(dis -> w.addToList(true, dis));
+        else
+            w.addToList(true,"В коллекции нет элементов");
         return w;
     }
 
@@ -114,16 +105,10 @@ public class CommanderServer {
      */
     public static Writer minByCreationDate(Collection c) {
         Writer w = new Writer();
-        if (c.list.size() > 0) {
-            Route minR = c.list.get(0);
-            for (Route r : c.list) {
-                if (r.getCreationDate().compareTo(minR.getCreationDate()) < 0)
-                    minR = r;
-            }
-            w.addToList(true, minR.toString());
-            return w;
-        }
-        w.addToList(true, "В коллекции нет элементов");
+        if (c.list.size() > 0)
+            w.addToList(true, c.list.stream().min(Comparator.comparing(Route::getCreationDate)).get());
+        else
+            w.addToList(true, "В коллекции нет элементов");
         return w;
     }
 
@@ -132,20 +117,10 @@ public class CommanderServer {
      */
     public static Writer averageOfDistance(Collection c) {
         Writer w = new Writer();
-        if (c.list.size() > 0) {
-            long sum = 0L;
-            int count = 0;
-            for (Route r : c.list) {
-                if (r.getDistance() != null)
-                    sum += r.getDistance();
-                else
-                    count++;
-            }
-            if (c.list.size() - count > 0)
-                w.addToList(true,"Среднее значение distance: " + sum / (c.list.size() - count));
-            return w;
-        }
-        w.addToList(true,"В коллекции нет элементов");
+        if (c.list.size() > 0)
+            w.addToList(true,"Среднее значение distance: " + c.list.stream().filter(r -> r.getDistance() != null).mapToDouble(Route::getDistance).average().orElse(Double.NaN));
+        else
+            w.addToList(true,"В коллекции нет элементов");
         return w;
     }
 
@@ -156,17 +131,8 @@ public class CommanderServer {
         Writer w = new Writer();
         int id = c.getRandId();
         Route newRoute = RouteWithId((Route) com.returnObj(), id);
-        int size = c.list.size();
-        int i = 0;
-        while (i < size) {
-            if (c.list.get(i).compareTo(newRoute) < 0) {
-                w.addToList(true, "Удален элемент с id: " + c.list.get(i).getId());
-                c.list.remove(c.list.get(i));
-                size -= 1;
-                i -= 1;
-            }
-            i++;
-        }
+        c.list.stream().filter(route -> route.compareTo(newRoute) < 0).forEach(route -> w.addToList(true, "Удален элемент с id: " + route.getId()));
+        c.list.removeIf(route -> route.compareTo(newRoute) < 0);
         Collections.sort(c.list);
         return w;
     }
@@ -178,17 +144,8 @@ public class CommanderServer {
         Writer w = new Writer();
         int id = c.getRandId();
         Route newRoute = RouteWithId((Route) com.returnObj(), id);
-        int size = c.list.size();
-        int i = 0;
-        while (i < size) {
-            if (c.list.get(i).compareTo(newRoute) > 0) {
-                w.addToList(true, "Удален элемент с id: " + c.list.get(i).getId());
-                c.list.remove(c.list.get(i));
-                size -= 1;
-                i -= 1;
-            }
-            i++;
-        }
+        c.list.stream().filter(route -> route.compareTo(newRoute) > 0).forEach(route -> w.addToList(true, "Удален элемент с id: " + route.getId()));
+        c.list.removeIf(route -> route.compareTo(newRoute) > 0);
         Collections.sort(c.list);
         return w;
     }
@@ -306,11 +263,9 @@ public class CommanderServer {
         Writer w = new Writer();
         if (c.list.isEmpty()) {
             w.addToList(true,"В коллекции нет элементов");
-            return w;
         }
-        for (Route r : c.list) {
-            w.addToList(true, r.toString());
-        }
+        else
+            c.list.forEach(r -> w.addToList(true, r.toString()));
         return w;
     }
 
