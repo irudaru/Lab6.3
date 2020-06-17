@@ -1,4 +1,4 @@
-package Exceptions;
+package exceptions;
 
 public class FailedCheckException extends Exception {
     public FailedCheckException() {

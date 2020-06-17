@@ -1,3 +1,5 @@
+package program;
+
 import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
@@ -12,7 +14,7 @@ public class Collection {
      */
     private Date date = new Date();
     /**
-     * Список, в котором хранятся элементы типа Route
+     * Список, в котором хранятся элементы типа program.Route
      */
     public LinkedList<Route> list = new LinkedList<>();
 

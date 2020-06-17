@@ -1,6 +1,8 @@
-import Exceptions.EndOfFileException;
-import Exceptions.IncorrectFileNameException;
-import Exceptions.FailedCheckException;
+package program;
+
+import exceptions.EndOfFileException;
+import exceptions.IncorrectFileNameException;
+import exceptions.FailedCheckException;
 
 import java.io.FileNotFoundException;
 import java.time.ZonedDateTime;
@@ -61,10 +63,10 @@ public class Commander {
                 minByCreationDate(c);
                 break;
             case ("print_field_ascending_distance"):
-                Commander.printFieldAscendingDistance(c);
+                printFieldAscendingDistance(c);
                 break;
             default:
-                System.out.println("Такой команды нет");
+                Writer.writeln("Такой команды нет");
         }
         return true;
     }
@@ -73,7 +75,7 @@ public class Commander {
      * Показывает информацию по всем возможным командам
      */
     public static void help() {
-        System.out.println(
+        Writer.writeln(
                 "help : вывести справку по доступным командам\n" +
                         "info : вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)\n" +
                         "show : вывести в стандартный поток вывода все элементы коллекции в строковом представлении\n" +
@@ -89,7 +91,7 @@ public class Commander {
                         "remove_lower {element} : удалить из коллекции все элементы, меньшие, чем заданный\n" +
                         "average_of_distance : вывести среднее значение поля distance для всех элементов коллекции\n" +
                         "min_by_creation_date : вывести любой объект из коллекции, значение поля creationDate которого является минимальным\n" +
-                        "print_field_ascending_distance distance : вывести значения поля distance в порядке возрастания"
+                        "print_field_ascending_distance : вывести значения поля distance в порядке возрастания"
         );
     }
 
@@ -97,9 +99,9 @@ public class Commander {
      * Показывает информацию о коллекции
      */
     public static void info(Collection collection) {
-        System.out.println("Тип коллекции: " + collection.list.getClass().getName());
-        System.out.println("Колличество элементов: " + collection.list.size());
-        System.out.println("Коллеция создана: " + collection.getDate());
+        Writer.writeln("Тип коллекции: " + collection.list.getClass().getName());
+        Writer.writeln("Колличество элементов: " + collection.list.size());
+        Writer.writeln("Коллеция создана: " + collection.getDate());
     }
 
     /**
@@ -114,11 +116,11 @@ public class Commander {
             }
             Collections.sort(distances);
             for (Long dis : distances) {
-                System.out.println(dis);
+                Writer.writeln(dis);
             }
             return;
         }
-        System.out.println("В коллекции нет элементов");
+        Writer.writeln("В коллекции нет элементов");
     }
 
     /**
@@ -131,10 +133,10 @@ public class Commander {
                 if (r.getCreationDate().compareTo(minR.getCreationDate()) < 0)
                     minR = r;
             }
-            System.out.println(minR.toString());
+            Writer.writeln(minR.toString());
             return;
         }
-        System.out.println("В коллекции нет элементов");
+        Writer.writeln("В коллекции нет элементов");
     }
 
     /**
@@ -151,10 +153,10 @@ public class Commander {
                     count++;
             }
             if (c.list.size() - count > 0)
-                System.out.println("Среднее значение distance: " + sum / (c.list.size() - count));
+                Writer.writeln("Среднее значение distance: " + sum / (c.list.size() - count));
             return;
         }
-        System.out.println("В коллекции нет элементов");
+        Writer.writeln("В коллекции нет элементов");
     }
 
     /**
@@ -201,9 +203,9 @@ public class Commander {
     public static void addIfMin(AbstractReader reader, Collection c, String s) throws EndOfFileException {
         int id = c.getRandId();
         Route newRoute = toAdd(reader, id, s);
-        if (newRoute.compareTo(c.list.getFirst()) < 0) { //почему первый - минимальный?
+        if (newRoute.compareTo(c.list.getFirst()) < 0) {
             c.list.add(newRoute);
-        } else System.out.println("Элемент не является минимальным в списке");
+        } else Writer.writeln("Элемент не является минимальным в списке");
         Collections.sort(c.list);
     }
 
@@ -213,30 +215,30 @@ public class Commander {
      */
     public static boolean executeScript(Collection c, String s) {
         boolean programIsWorking = true;
-        //Reader reader;
+        //program.Reader reader;
         try (Reader reader = new Reader(s)) {
             if (RecursionHandler.isContains(s)) {
                 RecursionHandler.addToFiles(s);
                 String[] com;
-                System.out.print("\u001B[33m" + "Чтение команды в файле " + s + ": " + "\u001B[0m");
+                Writer.write("\u001B[33m" + "Чтение команды в файле " + s + ": " + "\u001B[0m");
                 String line = reader.read();
                 while (line != null && programIsWorking) {
                     com = AbstractReader.splitter(line);
                     programIsWorking = Commander.switcher(reader, c, com[0], com[1]);
-                    System.out.print("\u001B[33m" + "Чтение команды в файле " + s + ": " + "\u001B[0m");
+                    Writer.write("\u001B[33m" + "Чтение команды в файле " + s + ": " + "\u001B[0m");
                     line = reader.read();
                 }
                 RecursionHandler.removeLast();
             } else
-                System.out.println("\u001B[31m" + "Найдено повторение" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Найдено повторение" + "\u001B[0m");
 
         } catch (IncorrectFileNameException e) {
-            System.out.println("\u001B[31m" + "Неверное имя файла" + "\u001B[0m");
+            Writer.writeln("\u001B[31m" + "Неверное имя файла" + "\u001B[0m");
         } catch (EndOfFileException e) {
-            System.out.println("\u001B[31m" + "Неожиданный конец файла " + s + "\u001B[0m");
+            Writer.writeln("\u001B[31m" + "Неожиданный конец файла " + s + "\u001B[0m");
             RecursionHandler.removeLast();
         } catch (FileNotFoundException e) {
-            System.out.println("\u001B[31m" + "Файл не найден" + "\u001B[0m");
+            Writer.writeln("\u001B[31m" + "Файл не найден" + "\u001B[0m");
         }
         return programIsWorking;
     }
@@ -267,7 +269,7 @@ public class Commander {
         }
         Route r = c.searchById(id);
         if (r == null) {
-            System.out.println("Такого элемента нет");
+            Writer.writeln("Такого элемента нет");
             return;
         }
         c.list.remove(r);
@@ -288,7 +290,7 @@ public class Commander {
         }
         Route r = c.searchById(id);
         if (r == null) {
-            System.out.println("Такого элемента нет");
+            Writer.writeln("Такого элемента нет");
             return;
         }
         String name = reader.handlerS("Введите String: name", Route.nameCheck);
@@ -301,11 +303,11 @@ public class Commander {
      */
     public static void show(Collection c) {
         if (c.list.isEmpty()) {
-            System.out.println("В коллекции нет элементов");
+            Writer.writeln("В коллекции нет элементов");
             return;
         }
         for (Route r : c.list) {
-            System.out.println(r.toString());
+            Writer.writeln(r.toString());
         }
     }
 
@@ -325,13 +327,13 @@ public class Commander {
 
         try {
             Route.nameCheck.checker(s);
-            System.out.println("Поле name: " + s);
+            Writer.writeln("Поле name: " + s);
         } catch (FailedCheckException e) {
             s = reader.handlerS("Введите String name, диной больше 0: ", Route.nameCheck);
         }
         route.setName(s);
 
-        System.out.println("Ввoд полей Coordinates");
+        Writer.writeln("Ввoд полей program.Coordinates");
         int cx = reader.handlerI("      Введите int x, не null: ", Coordinates.xCheck);
         Long cy = reader.handlerL("     Введите Long y, величиной больше -765: ", Coordinates.yCheck);
         route.setCoordinates(new Coordinates(cx, cy));
@@ -339,16 +341,16 @@ public class Commander {
         ZonedDateTime creationTime = ZonedDateTime.now();
         route.setCreationDate(creationTime);
 
-        System.out.println("Ввoд полей Location to");
+        Writer.writeln("Ввoд полей program.Location to");
         Long x = reader.handlerL("     Введите Long x, не null: ", Location.xyzCheck);
         long y = reader.handlerL("     Введите long y, не null: ", Location.xyzCheck);
         long z = reader.handlerL("     Введите long z, не null: ", Location.xyzCheck);
         String name = reader.handlerS("     Введите поле name, длиной меньше 867: ", Location.nameCheck);
         route.setTo(new Location(x, y, z, name));
 
-        System.out.println("Является ли From null'ом?");
+        Writer.writeln("Является ли From null'ом?");
         if (!reader.handlerB("     Введите Bool: ", boolCheck)) {
-            System.out.println("Ввoд полей Location from");
+            Writer.writeln("Ввoд полей program.Location from");
             x = reader.handlerL("     Введите Long x, не null: ", Location.xyzCheck);
             y = reader.handlerL("     Введите long y, не null: ", Location.xyzCheck);
             z = reader.handlerL("     Введите long z, не null: ", Location.xyzCheck);

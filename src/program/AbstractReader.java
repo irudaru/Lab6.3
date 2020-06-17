@@ -1,5 +1,7 @@
-import Exceptions.EndOfFileException;
-import Exceptions.FailedCheckException;
+package program;
+
+import exceptions.EndOfFileException;
+import exceptions.FailedCheckException;
 
 import java.util.Scanner;
 
@@ -46,7 +48,7 @@ public abstract class AbstractReader implements AutoCloseable {
 
         while (true) {
             try {
-                System.out.print(s);
+                Writer.write(s);
                 line = this.read();
                 if (line == null)
                     throw new EndOfFileException("Преждевременный конец файла!");
@@ -54,9 +56,9 @@ public abstract class AbstractReader implements AutoCloseable {
                     return c.checker(null);
                 return c.checker(Integer.parseInt(line));
             } catch (NumberFormatException e) {
-                System.out.println("\u001B[31m" + "Ошибка ввода, попробуйте еще раз" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Ошибка ввода, попробуйте еще раз" + "\u001B[0m");
             } catch (FailedCheckException e) {
-                System.out.println("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
             }
         }
     }
@@ -69,7 +71,7 @@ public abstract class AbstractReader implements AutoCloseable {
 
         while (true) {
             try {
-                System.out.print(s);
+                Writer.write(s);
                 line = this.read();
                 if (line == null)
                     throw new EndOfFileException("Преждевременный конец файла!");
@@ -77,9 +79,9 @@ public abstract class AbstractReader implements AutoCloseable {
                     return c.checker(null);
                 return c.checker(Long.parseLong(line));
             } catch (NumberFormatException e) {
-                System.out.println("\u001B[31m" + "Ошибка ввода, попробуйте еще раз" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Ошибка ввода, попробуйте еще раз" + "\u001B[0m");
             } catch (FailedCheckException e) {
-                System.out.println("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
             }
         }
     }
@@ -91,7 +93,7 @@ public abstract class AbstractReader implements AutoCloseable {
         String line;
         while (true) {
             try {
-                System.out.print(s);
+                Writer.write(s);
                 line = this.read();
                 if (line == null)
                     throw new EndOfFileException("Преждевременный конец файла!");
@@ -99,7 +101,7 @@ public abstract class AbstractReader implements AutoCloseable {
                     return c.checker(null);
                 return c.checker(line);
             } catch (FailedCheckException e) {
-                System.out.println("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
             }
         }
     }
@@ -112,7 +114,7 @@ public abstract class AbstractReader implements AutoCloseable {
 
         while (true) {
             try {
-                System.out.print(s);
+                Writer.write(s);
                 line = this.read();
                 if (line == null)
                     throw new EndOfFileException("Преждевременный конец файла!");
@@ -120,9 +122,9 @@ public abstract class AbstractReader implements AutoCloseable {
                     return c.checker(null);
                 return c.checker(parseBoolean(line));
             } catch (NumberFormatException e) {
-                System.out.println("\u001B[31m" + "Ошибка ввода, попробуйте еще раз" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Ошибка ввода, попробуйте еще раз" + "\u001B[0m");
             } catch (FailedCheckException e) {
-                System.out.println("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
+                Writer.writeln("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
             }
         }
     }

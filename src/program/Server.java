@@ -1,4 +1,4 @@
-/*
+package program;/*
 ОБЯЗАННОСТИ СЕРВЕРА
 - Ожидать подключение или запрос
 - Обработать полученную команду
@@ -7,6 +7,8 @@
 - Сохранить результат работы при завершении работы приложения в файл
 - Сохранить результат работы в файл командой с сервера save(ТОЛЬКО ДЛЯ СЕРВЕРА)
  */
+
+import command.Command;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -25,40 +27,56 @@ public class Server {
 
     private static ServerSocket server; // серверсокет
 
-    private static BufferedReader in; // поток чтения из сокета
-    private static BufferedWriter out; // поток записи в сокет
+    private static DataOutputStream dOut;
+    private static DataInputStream dIn;
 
     public static void main(String[] args) {
         try {
             try  {
                 server = new ServerSocket(1); // Говорим серверу прослушивать порт 1
-                System.out.println("Сервер запущен!"); // Обратная связь
+                Writer.writeln("Сервер запущен!"); // Обратная связь
                 clientSocket = server.accept(); // accept() будет ждать пока
                 //кто-нибудь не захочет подключиться
-                try { // установив связь и воссоздав сокет для общения с клиентом можно перейти
-                    // к созданию потоков ввода/вывода.
-                    // теперь мы можем принимать сообщения
-                    in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    // и отправлять
-                    out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                try {
+                    dOut = new DataOutputStream(clientSocket.getOutputStream());
+                    dIn = new DataInputStream(clientSocket.getInputStream());
 
-                    String word = in.readLine(); // ждём пока клиент что-нибудь нам напишет
-                    System.out.println(word);
-                    // не долго думая отвечает клиенту
-                    out.write("Привет, это Сервер! Подтверждаю, вы написали : " + word + "\n");
-                    out.flush(); // выталкиваем все из буфера
+                    Collection collection = Collection.startFromSave(args);
+
+                    int length = dIn.readInt();
+                    if(length>0) {
+                        byte[] message = new byte[length];
+                        dIn.readFully(message, 0, message.length); // read the message
+
+                        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(message));
+                        Writer.writeln(message);
+                        Writer.writeln(objectInputStream.readObject());
+                        Command com = (Command) objectInputStream.readObject();
+                        objectInputStream.close();
+
+                        Writer w = CommanderServer.switcher(com, collection);
+
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+                        objectOutputStream.writeObject(w);
+                        objectOutputStream.flush();
+
+                        dOut.writeInt(byteArrayOutputStream.size());
+                        dOut.write(byteArrayOutputStream.toByteArray());
+
+                    }
 
                 } finally { // в любом случае сокет будет закрыт
                     clientSocket.close();
                     // потоки тоже хорошо бы закрыть
-                    in.close();
-                    out.close();
+                    dIn.close();
+                    dOut.close();
                 }
             } finally {
-                System.out.println("Сервер закрыт!");
+                Writer.writeln("Сервер закрыт!");
                 server.close();
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             System.err.println(e);
         }
     }

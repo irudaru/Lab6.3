@@ -1,7 +1,9 @@
-import Exceptions.FailedCheckException;
+package program;
+
+import exceptions.FailedCheckException;
 
 /**
- * Класс - поле класса Route
+ * Класс - поле класса program.Route
  */
 
 public class Coordinates {
@@ -39,7 +41,7 @@ public class Coordinates {
 
     @Override
     public String toString() {
-        return "Coordinates{" +
+        return "program.Coordinates{" +
                 "x=" + x +
                 ", y=" + y +
                 '}';

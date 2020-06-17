@@ -1,4 +1,6 @@
-import Exceptions.FailedCheckException;
+package program;
+
+import exceptions.FailedCheckException;
 
 import java.time.ZonedDateTime;
 
@@ -21,7 +23,7 @@ public class Route implements Comparable<Route> {
 
     @Override
     public String toString() {
-        return "Route{" +
+        return "program.Route{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", coordinates=" + coordinates +

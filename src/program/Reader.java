@@ -1,5 +1,6 @@
-import Exceptions.EndOfFileException;
-import Exceptions.IncorrectFileNameException;
+package program;
+
+import exceptions.IncorrectFileNameException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,10 +25,10 @@ public class Reader extends AbstractReader {
     public String read() /*throws EndOfFileException */ {
         if (scan.hasNextLine()) {
             String line = scan.nextLine();
-            System.out.print(line + "\n");
+            Writer.write(line + "\n");
             return line;
         }
-        System.out.print("Конец файла." + "\n");
+        Writer.write("Конец файла." + "\n");
         return null; //непроверенная неизвестность "_"
         //throw new EndOfFileException("Преждевременный конец файла!");
     }

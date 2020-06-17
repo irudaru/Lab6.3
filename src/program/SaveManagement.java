@@ -1,4 +1,6 @@
-import Exceptions.FailedCheckException;
+package program;
+
+import exceptions.FailedCheckException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,7 +33,7 @@ public class SaveManagement {
                 fileWriter.write(r.toCSVfile() + "\n");
             }
         } catch (IOException e) {
-            System.out.println("Ошибка доступа к файлу");
+            Writer.writeln("Ошибка доступа к файлу");
         }
     }
 
@@ -52,7 +54,7 @@ public class SaveManagement {
                     if (collection.searchById(id) == null)
                         route.setId(id);
                     else {
-                        System.out.println("Получен неверный id");
+                        Writer.writeln("Получен неверный id");
                         throw new FailedCheckException();
                     }
 
@@ -82,11 +84,11 @@ public class SaveManagement {
                     }
                     collection.list.add(route);
                 } catch (ArrayIndexOutOfBoundsException | DateTimeParseException | NumberFormatException | FailedCheckException e) {
-                    System.out.println("\u001B[31m" + "Ошибка чтения файла, строка: " + "\u001B[0m" + lineNum);
+                    Writer.writeln("\u001B[31m" + "Ошибка чтения файла, строка: " + "\u001B[0m" + lineNum);
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("\u001B[31m" + "Ошибка доступа к файлу" + "\u001B[0m");
+            Writer.writeln("\u001B[31m" + "Ошибка доступа к файлу" + "\u001B[0m");
         }
         Collections.sort(collection.list);
         return collection;

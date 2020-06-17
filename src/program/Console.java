@@ -1,4 +1,6 @@
-import Exceptions.EndOfFileException;
+package program;
+
+import exceptions.EndOfFileException;
 
 import java.util.Scanner;
 
