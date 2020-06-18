@@ -1,8 +1,8 @@
 package program;
 
 import exceptions.EndOfFileException;
-import exceptions.IncorrectFileNameException;
 import exceptions.FailedCheckException;
+import exceptions.IncorrectFileNameException;
 
 import java.io.FileNotFoundException;
 import java.time.ZonedDateTime;
@@ -14,6 +14,11 @@ import java.util.Comparator;
  */
 
 public class Commander {
+    public static Checker<Boolean> boolCheck = (Boolean B) -> {
+        if (B != null) return B;
+        else throw new FailedCheckException();
+    };
+
     /**
      * Обработка команд, вводимых с консоли
      */
@@ -140,7 +145,7 @@ public class Commander {
     public static void removeLower(AbstractReader reader, Collection c, String s) throws EndOfFileException {
         int id = c.getRandId();
         Route newRoute = toAdd(reader, id, s);
-        c.list.stream().filter(route -> route.compareTo(newRoute) < 0).forEach(route -> Writer.writeln( "Удален элемент с id: " + route.getId()));
+        c.list.stream().filter(route -> route.compareTo(newRoute) < 0).forEach(route -> Writer.writeln("Удален элемент с id: " + route.getId()));
         c.list.removeIf(route -> route.compareTo(newRoute) < 0);
         Collections.sort(c.list);
     }
@@ -151,7 +156,7 @@ public class Commander {
     public static void removeGreater(AbstractReader reader, Collection c, String s) throws EndOfFileException {
         int id = c.getRandId();
         Route newRoute = toAdd(reader, id, s);
-        c.list.stream().filter(route -> route.compareTo(newRoute) > 0).forEach(route -> Writer.writeln( "Удален элемент с id: " + route.getId()));
+        c.list.stream().filter(route -> route.compareTo(newRoute) > 0).forEach(route -> Writer.writeln("Удален элемент с id: " + route.getId()));
         c.list.removeIf(route -> route.compareTo(newRoute) > 0);
         Collections.sort(c.list);
     }
@@ -322,9 +327,4 @@ public class Commander {
 
         return route;
     }
-
-    public static Checker<Boolean> boolCheck = (Boolean B) -> {
-        if (B != null) return B;
-        else throw new FailedCheckException();
-    };
 }

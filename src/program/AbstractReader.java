@@ -6,29 +6,21 @@ import exceptions.FailedCheckException;
 import java.util.Scanner;
 
 //ирир
+
 /**
  * Абстрактный класс, предназначенный для считаывания команд с консоли и считывания команд из файла
  */
 
 public abstract class AbstractReader implements AutoCloseable {
     /**
-     * protected конструктор
-     */
-    protected AbstractReader() {
-    }
-
-    /**
-     * @return Возвращает последнюю строку
-     */
-    public abstract String read() throws EndOfFileException;
-
-    /**
      * Поле типа Scanner, предназначенное для считывания строки либо из файла, либо из консоли
      */
     protected Scanner scan;
 
-    public void close() {
-        scan.close();
+    /**
+     * protected конструктор
+     */
+    protected AbstractReader() {
     }
 
     public static String[] splitter(String line) {
@@ -38,6 +30,23 @@ public abstract class AbstractReader implements AutoCloseable {
             return s;
         } else
             return new String[]{s[0], ""};
+    }
+
+    public static Boolean parseBoolean(String s) {
+        if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("t") || s.equals("1") || s.equalsIgnoreCase("y"))
+            return true;
+        else if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("f") || s.equals("0") || s.equalsIgnoreCase("n"))
+            return false;
+        throw new NumberFormatException();
+    }
+
+    /**
+     * @return Возвращает последнюю строку
+     */
+    public abstract String read() throws EndOfFileException;
+
+    public void close() {
+        scan.close();
     }
 
     /**
@@ -127,14 +136,6 @@ public abstract class AbstractReader implements AutoCloseable {
                 Writer.writeln("\u001B[31m" + "Условия не соблюдены, попробуйте еще раз" + "\u001B[0m");
             }
         }
-    }
-
-    public static Boolean parseBoolean(String s) {
-        if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("t") || s.equals("1") || s.equalsIgnoreCase("y"))
-            return true;
-        else if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("f") || s.equals("0") || s.equalsIgnoreCase("n"))
-            return false;
-        throw new NumberFormatException();
     }
 }
 

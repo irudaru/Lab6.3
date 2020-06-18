@@ -1,8 +1,8 @@
 package command;
 
-import program.Route;
-
 public class RemoveById extends Command {
+    Integer id;
+
     public RemoveById(Integer id) {
         super(Commands.REMOVE_BY_ID);
         this.id = id;
@@ -12,6 +12,4 @@ public class RemoveById extends Command {
     public Integer returnObj() {
         return id;
     }
-
-    Integer id;
 }

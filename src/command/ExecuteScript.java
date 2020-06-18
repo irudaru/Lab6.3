@@ -1,8 +1,8 @@
 package command;
 
-import program.Route;
-
 public class ExecuteScript extends Command {
+    String script;
+
     public ExecuteScript(String script) {
         super(Commands.EXECUTE_SCRIPT);
         this.script = script;
@@ -12,6 +12,4 @@ public class ExecuteScript extends Command {
     public String returnObj() {
         return script;
     }
-
-    String script;
 }

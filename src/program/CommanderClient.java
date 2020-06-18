@@ -11,6 +11,11 @@ import java.time.ZonedDateTime;
  */
 
 public class CommanderClient {
+    public static Checker<Boolean> boolCheck = (Boolean B) -> {
+        if (B != null) return B;
+        else throw new FailedCheckException();
+    };
+
     /**
      * Обработка команд, вводимых с консоли
      */
@@ -30,12 +35,10 @@ public class CommanderClient {
                 return removeById(reader, s2);
             case ("clear"):
                 return new Command(Commands.CLEAR);
-            case ("save"):
-                return new Command(Commands.SAVE);
             case ("execute_script"):
                 return new ExecuteScript(s2);
             case ("exit"):
-                System.exit(0);
+                return new Command(Commands.EXIT);
             case ("add_if_min"):
                 return addIfMin(reader, s2);
             case ("remove_greater"):
@@ -77,6 +80,7 @@ public class CommanderClient {
         Route newRoute = toAddWithoutId(reader, s);
         return new CommandWithObj(Commands.ADD_IF_MIN, newRoute);
     }
+
     /**
      * Удаляет все элементы по его id
      */
@@ -157,9 +161,4 @@ public class CommanderClient {
 
         return route;
     }
-
-    public static Checker<Boolean> boolCheck = (Boolean B) -> {
-        if (B != null) return B;
-        else throw new FailedCheckException();
-    };
 }

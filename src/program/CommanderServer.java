@@ -1,9 +1,10 @@
 package program;
 
 import command.Command;
+
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 
 /**
  * Класс - обработчик команд с консоли
@@ -29,8 +30,6 @@ public class CommanderServer {
                 return removeById(c, com);
             case CLEAR:
                 return clear(c);
-            case SAVE:
-                return save(c);
             case EXECUTE_SCRIPT:
                 return executeScript(c, com);
             case ADD_IF_MIN:
@@ -82,9 +81,9 @@ public class CommanderServer {
      */
     public static Writer info(Collection collection) {
         Writer w = new Writer();
-        w.addToList(true,"Тип коллекции: " + collection.list.getClass().getName());
-        w.addToList(true,"Колличество элементов: " + collection.list.size());
-        w.addToList(true,"Коллеция создана: " + collection.getDate());
+        w.addToList(true, "Тип коллекции: " + collection.list.getClass().getName());
+        w.addToList(true, "Колличество элементов: " + collection.list.size());
+        w.addToList(true, "Коллеция создана: " + collection.getDate());
         return w;
     }
 
@@ -96,7 +95,7 @@ public class CommanderServer {
         if (c.list.size() > 0)
             c.list.stream().filter(r -> r.getDistance() != null).map(Route::getDistance).sorted().forEach(dis -> w.addToList(true, dis));
         else
-            w.addToList(true,"В коллекции нет элементов");
+            w.addToList(true, "В коллекции нет элементов");
         return w;
     }
 
@@ -118,9 +117,9 @@ public class CommanderServer {
     public static Writer averageOfDistance(Collection c) {
         Writer w = new Writer();
         if (c.list.size() > 0)
-            w.addToList(true,"Среднее значение distance: " + c.list.stream().filter(r -> r.getDistance() != null).mapToDouble(Route::getDistance).average().orElse(Double.NaN));
+            w.addToList(true, "Среднее значение distance: " + c.list.stream().filter(r -> r.getDistance() != null).mapToDouble(Route::getDistance).average().orElse(Double.NaN));
         else
-            w.addToList(true,"В коллекции нет элементов");
+            w.addToList(true, "В коллекции нет элементов");
         return w;
     }
 
@@ -140,7 +139,7 @@ public class CommanderServer {
     /**
      * Удаляет все элементы коллекции, которые больше чем заданный
      */
-    public static Writer removeGreater(Collection c, Command com)  {
+    public static Writer removeGreater(Collection c, Command com) {
         Writer w = new Writer();
         int id = c.getRandId();
         Route newRoute = RouteWithId((Route) com.returnObj(), id);
@@ -160,7 +159,7 @@ public class CommanderServer {
         if (newRoute.compareTo(c.list.getFirst()) < 0) {
             c.list.add(newRoute);
             w.addToList(true, "Элемент успешно добавлен");
-        } else w.addToList(true,"Элемент не является минимальным в списке");
+        } else w.addToList(true, "Элемент не является минимальным в списке");
         Collections.sort(c.list);
         return w;
     }
@@ -169,10 +168,10 @@ public class CommanderServer {
      * Считывает и исполняет скрипт из указанного файла.
      * В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме
      */
-    public static Writer executeScript(Collection c, Command com) {
+    public static Writer executeScript(Collection c, Command command) {
         Writer w = new Writer();
-        /*boolean programIsWorking = true;
-        //program.Reader reader;
+        String s = (String) command.returnObj();
+        boolean programIsWorking = true;
         try (Reader reader = new Reader(s)) {
             if (RecursionHandler.isContains(s)) {
                 RecursionHandler.addToFiles(s);
@@ -189,25 +188,14 @@ public class CommanderServer {
             } else
                 Writer.writeln("\u001B[31m" + "Найдено повторение" + "\u001B[0m");
 
-        } catch (IncorrectFileNameException e) {
+        } catch (exceptions.IncorrectFileNameException e) {
             Writer.writeln("\u001B[31m" + "Неверное имя файла" + "\u001B[0m");
-        } catch (EndOfFileException e) {
+        } catch (exceptions.EndOfFileException e) {
             Writer.writeln("\u001B[31m" + "Неожиданный конец файла " + s + "\u001B[0m");
             RecursionHandler.removeLast();
         } catch (FileNotFoundException e) {
             Writer.writeln("\u001B[31m" + "Файл не найден" + "\u001B[0m");
         }
-        return programIsWorking;*/
-        return w;
-    }
-
-    /**
-     * Сохраняет коллекцию в фаил
-     */
-    public static Writer save(Collection c) {
-        Writer w = new Writer();
-        SaveManagement.saveToFile(c);
-        w.addToList(true, "Файл сохранен");
         return w;
     }
 
@@ -229,11 +217,11 @@ public class CommanderServer {
         Integer id = (Integer) com.returnObj();
         Route r = c.searchById(id);
         if (r == null) {
-            w.addToList(true,"Такого элемента нет");
+            w.addToList(true, "Такого элемента нет");
             return w;
         }
         c.list.remove(r);
-        w.addToList(true,"Элемент с id: " + id +" успешно удален");
+        w.addToList(true, "Элемент с id: " + id + " успешно удален");
         Collections.sort(c.list);
 
         return w;
@@ -242,12 +230,12 @@ public class CommanderServer {
     /**
      * Перезаписывает элемент списка с указанным id
      */
-    public static Writer update(Collection c, Command com){
+    public static Writer update(Collection c, Command com) {
         Writer w = new Writer();
         int id = ((Route) com.returnObj()).getId();
         Route r = c.searchById(id);
         if (r == null) {
-            w.addToList(true,"Такого элемента нет");
+            w.addToList(true, "Такого элемента нет");
             return w;
         }
         c.list.set(c.list.indexOf(r), (Route) com.returnObj());
@@ -262,9 +250,8 @@ public class CommanderServer {
     public static Writer show(Collection c) {
         Writer w = new Writer();
         if (c.list.isEmpty()) {
-            w.addToList(true,"В коллекции нет элементов");
-        }
-        else
+            w.addToList(true, "В коллекции нет элементов");
+        } else
             c.list.forEach(r -> w.addToList(true, r.toString()));
         return w;
     }
@@ -272,7 +259,7 @@ public class CommanderServer {
     /**
      * Добавляет элемент в список
      */
-    public static Writer add(Collection c, Command com){
+    public static Writer add(Collection c, Command com) {
         Writer w = new Writer();
         int id = c.getRandId();
         c.list.add(RouteWithId((Route) com.returnObj(), id));
@@ -281,8 +268,7 @@ public class CommanderServer {
         return w;
     }
 
-    public static Route RouteWithId(Route r, int id)
-    {
+    public static Route RouteWithId(Route r, int id) {
         r.setId(id);
         return r;
     }

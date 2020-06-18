@@ -3,8 +3,9 @@ package command;
 import java.io.Serializable;
 
 public class Command implements Serializable {
-    public Command(Commands com)
-    {
+    Commands current;
+
+    public Command(Commands com) {
         current = com;
     }
 
@@ -12,12 +13,9 @@ public class Command implements Serializable {
         return current;
     }
 
-    public Object returnObj()
-    {
+    public Object returnObj() {
         return null;
     }
-
-    Commands current;
 
     @Override
     public String toString() {

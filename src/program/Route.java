@@ -10,6 +10,28 @@ import java.time.ZonedDateTime;
  */
 
 public class Route implements Comparable<Route>, Serializable {
+    /**
+     * Проверка на тип Long
+     */
+    public static Checker<Long> distanceCheck = (Long L) -> {
+        if (L == null) return null;
+        else if (L > 1) return L;
+        throw new FailedCheckException();
+    };
+    /**
+     * Проверка на тип Integer
+     */
+    public static Checker<Integer> idCheck = (Integer I) -> {
+        if (I != null && I > 0) return I;
+        else throw new FailedCheckException();
+    };
+    /**
+     * Проверка на тип String
+     */
+    public static Checker<String> nameCheck = (String S) -> {
+        if (S != null && S.length() != 0) return S;
+        else throw new FailedCheckException();
+    };
     private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
@@ -20,6 +42,10 @@ public class Route implements Comparable<Route>, Serializable {
 
     ZonedDateTime getCreationDate() {
         return creationDate;
+    }
+
+    public void setCreationDate(ZonedDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 
     @Override
@@ -73,8 +99,8 @@ public class Route implements Comparable<Route>, Serializable {
         return distance;
     }
 
-    public void setCreationDate(ZonedDateTime creationDate) {
-        this.creationDate = creationDate;
+    public void setDistance(Long distance) {
+        this.distance = distance;
     }
 
     public void setFrom(Location from) {
@@ -84,33 +110,6 @@ public class Route implements Comparable<Route>, Serializable {
     public void setTo(Location to) {
         this.to = to;
     }
-
-    public void setDistance(Long distance) {
-        this.distance = distance;
-    }
-
-    /**
-     * Проверка на тип Long
-     */
-    public static Checker<Long> distanceCheck = (Long L) -> {
-        if (L == null) return null;
-        else if (L > 1) return L;
-        throw new FailedCheckException();
-    };
-    /**
-     * Проверка на тип Integer
-     */
-    public static Checker<Integer> idCheck = (Integer I) -> {
-        if (I != null && I > 0) return I;
-        else throw new FailedCheckException();
-    };
-    /**
-     * Проверка на тип String
-     */
-    public static Checker<String> nameCheck = (String S) -> {
-        if (S != null && S.length() != 0) return S;
-        else throw new FailedCheckException();
-    };
 
     /**
      * Сравнение объектов. Сравнение объектов идет в первую очередь по имени, потом по дистанции

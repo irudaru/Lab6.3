@@ -10,13 +10,13 @@ import java.util.LinkedList;
 public class Collection {
 
     /**
-     * Дата создания списка
-     */
-    private Date date = new Date();
-    /**
      * Список, в котором хранятся элементы типа program.Route
      */
     public LinkedList<Route> list = new LinkedList<>();
+    /**
+     * Дата создания списка
+     */
+    private Date date = new Date();
 
     /**
      * Метод, возвращающий список, удобный для сохранения в формат CSV

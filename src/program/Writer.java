@@ -5,42 +5,43 @@ import java.util.LinkedList;
 
 
 public class Writer implements Serializable {
-    public static void write(Object s)
-    {
+    LinkedList<BoolString> toWrite = new LinkedList<>();
+
+    public static void write(Object s) {
         System.out.print(s);
     }
-    public static void writeln(Object s)
-    {
+
+    public static void writeln(Object s) {
         System.out.println(s);
     }
-    LinkedList<BoolString> toWrite = new LinkedList<>();
-    public void addToList(boolean isLn, Object o)
-    {
+
+    public void addToList(boolean isLn, Object o) {
         toWrite.add(new BoolString(isLn, o.toString()));
     }
-    public void writeAll()
-    {
+
+    public void writeAll() {
         boolean isLn;
         String s;
-        for (BoolString boolString : toWrite)
-        {
+        for (BoolString boolString : toWrite) {
             isLn = boolString.getBool();
             s = boolString.getString();
 
-            if(isLn)
+            if (isLn)
                 writeln(s);
             else
                 write(s);
         }
     }
-    public void clearList()
-    {
+
+    public void clearList() {
         toWrite.clear();
     }
 }
 
-class BoolString implements Serializable
-{
+class BoolString implements Serializable {
+    boolean bool;
+    String string;
+
     BoolString(boolean bool, String string) {
         this.bool = bool;
         this.string = string;
@@ -61,7 +62,4 @@ class BoolString implements Serializable
     public void setString(String string) {
         this.string = string;
     }
-
-    boolean bool;
-    String string;
 }
