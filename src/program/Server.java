@@ -70,12 +70,11 @@ public class Server {
 
         buffer = ByteBuffer.wrap(byteArrayOutputStream.toByteArray());
 
-        Writer.writeln(client.write(buffer));
+        client.write(buffer);
         if (buffer.hasRemaining())
             buffer.compact();
         else
             buffer.clear();
-        //Writer.writeln("Отправлено: " + new String(buffer.array()));
         objectOutputStream.flush();
         key.interestOps(SelectionKey.OP_READ);
     }

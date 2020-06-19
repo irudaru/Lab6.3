@@ -63,7 +63,6 @@ public class Client {
                 ByteBuffer bb = ByteBuffer.allocate(1024*1024);
                 bb.clear();
                 sc.read(bb);
-                Writer.writeln(new String(bb.array()));
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bb.array()));
 
