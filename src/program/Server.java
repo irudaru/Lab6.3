@@ -6,6 +6,7 @@ import command.Commands;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
@@ -20,27 +21,32 @@ public class Server {
         try {
             Selector selector = Selector.open();
             ServerSocketChannel serverSocket = ServerSocketChannel.open();
-            serverSocket.bind(new InetSocketAddress("localhost", 5454));
+            serverSocket.bind(new InetSocketAddress("localhost", 1));
             serverSocket.configureBlocking(false);
-            serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+            serverSocket.register(selector, SelectionKey.OP_ACCEPT );
             ByteBuffer buffer = ByteBuffer.allocate(1024*1024);
 
             while (true) {
-                selector.select();
-                Set<SelectionKey> selectedKeys = selector.selectedKeys();
-                Iterator<SelectionKey> iter = selectedKeys.iterator();
+                if (selector.select() <= 0)
+                    continue;
+
+                Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                 while (iter.hasNext()) {
 
                     SelectionKey key = iter.next();
+                    iter.remove();
+
+                    if (!key.isValid()) {
+                        continue;
+                    }
 
                     if (key.isAcceptable()) {
-                        register(selector, serverSocket);
+                        register(selector, key);
+                    } else if (key.isWritable()) {
+                        answer(buffer, key);
+                    } else if (key.isReadable()) {
+                        read(buffer, key);
                     }
-
-                    if (key.isReadable()) {
-                        readWithAnswer(buffer, key);
-                    }
-                    iter.remove();
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -48,12 +54,39 @@ public class Server {
         }
     }
 
-    private static void readWithAnswer(ByteBuffer buffer, SelectionKey key) throws IOException, ClassNotFoundException {
+    private static void answer(ByteBuffer buffer, SelectionKey key) throws IOException, ClassNotFoundException {
         SocketChannel client = (SocketChannel) key.channel();
-        client.read(buffer);
 
-        String result = new String(buffer.array()).trim();
-        if (result.length() <= 0) {
+        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(buffer.array()));
+        Command command = (Command) objectInputStream.readObject();
+        objectInputStream.close();
+        buffer.clear();
+        Writer.writeln("Вызвана команада: " + command.getCurrent().toString());
+        Writer w = CommanderServer.switcher(command, collection);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(w);
+
+        buffer = ByteBuffer.wrap(byteArrayOutputStream.toByteArray());
+
+        Writer.writeln(client.write(buffer));
+        if (buffer.hasRemaining())
+            buffer.compact();
+        else
+            buffer.clear();
+        //Writer.writeln("Отправлено: " + new String(buffer.array()));
+        objectOutputStream.flush();
+        key.interestOps(SelectionKey.OP_READ);
+    }
+
+    private static void read(ByteBuffer buffer, SelectionKey key) throws IOException {
+        SocketChannel client = (SocketChannel) key.channel();
+
+        try {
+            if (client.read(buffer) <= 0)
+                throw new SocketException();
+        } catch (SocketException e){
             client.close();
             buffer.clear();
             Writer.writeln("Connection closed...");
@@ -61,29 +94,15 @@ public class Server {
             return;
         }
 
-        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(buffer.array()));
-        Command command = (Command) objectInputStream.readObject();
-        objectInputStream.close();
-        buffer.clear();
-
-        Writer w = CommanderServer.switcher(command, collection);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(w);
-
-        ByteBuffer buffer1 = ByteBuffer.allocate(1024*1024);
-        buffer1.put(ByteBuffer.wrap(byteArrayOutputStream.toByteArray()));
-        buffer1.flip();
-        client.write(buffer1);
-        buffer1.clear();
-        objectOutputStream.flush();
+        key.interestOps(SelectionKey.OP_WRITE);
     }
 
-    private static void register(Selector selector, ServerSocketChannel serverSocket) throws IOException {
+    private static void register(Selector selector, SelectionKey key) throws IOException {
+        ServerSocketChannel serverSocket = (ServerSocketChannel) key.channel();
         SocketChannel client = serverSocket.accept();
         client.configureBlocking(false);
         client.register(selector, SelectionKey.OP_READ);
+        System.out.println("Connection Accepted: " + client.getLocalAddress());
     }
 
     /*public static void main(String[] args)
