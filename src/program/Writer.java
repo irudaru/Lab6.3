@@ -32,8 +32,8 @@ public class Writer implements Serializable {
                 write(s);
         }
     }
-
-    public void clearList() {
+    public void clearAll()
+    {
         toWrite.clear();
     }
 }
@@ -43,8 +43,8 @@ class BoolString implements Serializable {
     String string;
 
     BoolString(boolean bool, String string) {
-        this.bool = bool;
-        this.string = string;
+        setBool(bool);
+        setString(string);
     }
 
     public boolean getBool() {

@@ -27,30 +27,5 @@ public class Main {
         } catch (EndOfFileException e) {
             Writer.writeln("\u001B[31m" + "Неожиданное завершение работы консоли" + "\u001B[0m");//ctrl-d
         }
-
-
-
-       /* try {
-            String[] com;
-            Writer.write("\u001B[33m" + "Ожидание ввода команды: " + "\u001B[0m");
-            com = AbstractReader.splitter(Console.console.read());
-            Command command = CommanderClient.switcher(Console.console, com[0], com[1]);
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(command);
-            objectOutputStream.flush();
-
-            ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
-            Command command1 = (Command) objectInputStream.readObject();
-
-            objectInputStream.close();
-            Writer w = CommanderServer.switcher(command1, collection);
-            w.writeAll();
-        } catch (EndOfFileException | IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
-
-
     }
 }

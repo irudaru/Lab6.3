@@ -8,7 +8,6 @@ public enum Commands {
     UPDATE,
     REMOVE_BY_ID,
     CLEAR,
-    NON,
     EXECUTE_SCRIPT,
     EXIT,
     ADD_IF_MIN,
